@@ -35,7 +35,7 @@ app.get('/add-city', async (req, res) => {
                 title: "Corfu"
             },
             {
-                title: "Crete"
+                title: "Serres"
             }
             
         ]);
