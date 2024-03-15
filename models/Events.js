@@ -9,6 +9,7 @@ const EventSchema = new Schema({
     category: {
         type : String, 
         required: true,
+        enum: ['Music', 'Cinema', 'Sports', 'Theater', 'Technology'],
     },
     description: {
         type: String,
@@ -23,12 +24,17 @@ const EventSchema = new Schema({
         required: true,
     },
     remainingTickets: {
-        type: number,
+        type: Number,
         required: true,
         default: 10,
     },
     image: {
         type: String
+    },
+    city: {
+        type: Schema.Types.ObjectId,
+        ref: 'City',
+        required: true 
     }
 
 });
