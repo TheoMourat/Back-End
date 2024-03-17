@@ -2,7 +2,7 @@ const express = require('express');
 const City = require('../models/City'); 
 const router = express.Router();
 
-// Get all cities
+// //api endpoint that gets all cities
 router.get('/', async (req, res) => {
     try {
         const cities = await City.find();
@@ -12,6 +12,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// ...other routes for cities
+// more event api-endpoints should be added here
 
 module.exports = router;

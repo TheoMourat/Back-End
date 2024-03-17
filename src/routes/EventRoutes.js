@@ -2,7 +2,7 @@ const express = require('express');
 const Event = require('../models/Event'); 
 const router = express.Router();
 
-
+//api endpoint that shows all events
 router.get('/', async (req, res) => {
     try {
         const events = await Event.find();
@@ -11,5 +11,7 @@ router.get('/', async (req, res) => {
         res.status(500).send("Error fetching events");
     }
 });
+
+// more event api-endpoints should be added here
 
 module.exports = router;
