@@ -12,18 +12,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// get event by Id
-router.get('/:eventId', async (req, res) => {
-    try {
-        const eventId = req.params.eventId;
-        const event = await Event.findById(eventId);
-        if (!event) {
-            return res.status(404).send("Event not found");
-        }
-        res.json(event);
-    } catch (error) {
-        res.status(500).send("Error fetching event")
-    }
-});
+// more endpoints to add here
 
 module.exports = router;
