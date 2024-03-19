@@ -34,9 +34,6 @@ router.get('/search', async (req, res) => {
     try {
         const matchingCities = await City.find({title: {$regex:search, $options:'i'}});
         res.json(matchingCities);
-        if (!matchingCities) {
-            return res.status(404).send('City not found');
-        }
     } catch (error) {
         res.status(500).send('Error querying city');
     }
