@@ -23,8 +23,24 @@ router.get('/:cityId/events', async (req, res) => {
         console.log("City with Events:", cityEvents);
         res.json(cityEvents);
     } catch (error) {
-        console.error(error);
         res.status(500).send('Error fetching city events');
     }
 })
+
+
+//search for a city
+router.get('/search', async (req, res) => {
+    const search = req.query.query;
+    try {
+        const matchingCities = await City.find({title: {$regex:search, $options:'i'}});
+        res.json(matchingCities);
+        if (!matchingCities) {
+            return res.status(404).send('City not found');
+        }
+    } catch (error) {
+        res.status(500).send('Error querying city');
+    }
+});
+
+
 module.exports = router;
