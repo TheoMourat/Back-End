@@ -10,6 +10,8 @@ const CitySchema = new Schema({
         type: Schema.Types.ObjectId, // Use ObjectId type for references
         ref: 'Event' // Reference to the Event model
     }]
+    //numofEvents
+    //image
 });
 
 module.exports = mongoose.model('City', CitySchema);
