@@ -9,7 +9,7 @@ const EventSchema = new Schema({
     category: {
         type : String, 
         required: true,
-        enum: ['Music', 'Cinema', 'Sports', 'Theater', 'Technology'],
+        enum: ['Μουσική', 'Κινηματογράφος', 'Αθλητικά', 'Θέατρο'],
     },
     description: {
         type: String,

@@ -7,9 +7,18 @@ const CitySchema = new Schema({
         required: true,
     },
     events: [{
-        type: Schema.Types.ObjectId, // Use ObjectId type for references
-        ref: 'Event' // Reference to the Event model
-    }]
+        type: Schema.Types.ObjectId, 
+        ref: 'Event' 
+    }],
+    image: {
+        type: String,
+        required: true
+    },
+    numOfEvents: {
+        type: Number,
+        required: true
+    }
+
 });
 
 module.exports = mongoose.model('City', CitySchema);

@@ -1,73 +1,83 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const City = require('../models/Cities'); 
-const Event = require('../models/Events');
+const City = require('../src/models/City'); 
+const Event = require('../src/models/Event');
 
-const uri = 'mongodb+srv://codeTeam1:Ip9GYXrIRgyRzA0X@cluster0.lpprxai.mongodb.net/';
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+const AthensEvents = require('./AthensEvents');
+const ThessalonikiEvents = require('./ThessalonikiEvents');
+const SerresEvents = require('./SerresEvents');
+const CorfuEvents = require('./CorfuEvents');
+
+const connectDB = async () => {
+    try {
+        // Directly using the MongoDB URI in the connect function
+        await mongoose.connect('mongodb+srv://codeTeam1:Ip9GYXrIRgyRzA0X@cluster0.lpprxai.mongodb.net/');
+        console.log(`MongoDB Connected`);
+    } catch (error) {
+        console.error(`Failed to connect to MongoDB: ${error}`);
+        process.exit(1);
+    }
+};
 
 const cities = [
-    { title: 'Athens' },
-    { title: 'Thessaloniki' },
-    { title: 'Corfu' },
-    { title: 'Serres'}
-];
+    { title: 'Αθήνα', image: 'https://drive.google.com/uc?export=view&id=1Sw2EwIsDiFR9_Ar5M2rtqqR9xzoIlgzN', numOfEvents: 0 },
+    { title: 'Θεσσαλονίκη', image: 'https://drive.google.com/uc?export=view&id=1Lz1OskBwJe_S0oiujfn6dElZHeFG5d7v', numOfEvents: 0 },
+    { title: 'Κέρκυρα', image: 'https://drive.google.com/uc?export=view&id=1KwXtNsqHUHU1vRm2-AwxbTSPGDI4LBNx', numOfEvents: 0 },
+    { title: 'Σέρρες', image: 'https://drive.google.com/uc?export=view&id=1L1H12gPI3At0F7yYVN5oH-WpGFKR9Sjx', numOfEvents: 0 }
+  ];
 
-const events = [
-    { title: 'Rock Concert', category: 'Music', description: 'An electrifying evening of rock music.', date: new Date(), time: '20:00', remainingTickets: 150, imageUrl: 'http://example.com/rockconcert.jpg',cityName: 'Athens' },
-    { title: 'Jazz Night', category: 'Music', description: 'Smooth jazz in a cozy venue.', date: new Date(), time: '21:00', remainingTickets: 80, imageUrl: 'http://example.com/jazznight.jpg',cityName: 'Athens' },
-    { title: 'Indie Film Screening', category: 'Cinema', description: 'Exclusive screening of an indie masterpiece.', date: new Date(), time: '19:00', remainingTickets: 50, imageUrl: 'http://example.com/indiefilm.jpg',cityName: 'Athens' },
-    { title: 'Action Movie Marathon', category: 'Cinema', description: 'A marathon of the latest action movies.', date: new Date(), time: '18:00', remainingTickets: 200, imageUrl: 'http://example.com/actionmarathon.jpg',cityName: 'Athens' },
-    { title: 'Local Soccer Match', category: 'Sports', description: 'Exciting local soccer teams face off.', date: new Date(), time: '17:00', remainingTickets: 300, imageUrl: 'http://example.com/soccermatch.jpg',cityName: 'Athens' },
-    { title: 'Marathon', category: 'Sports', description: 'Annual city marathon. Come and join the race!', date: new Date(), time: '06:00', remainingTickets: 500, imageUrl: 'http://example.com/marathon.jpg',cityName: 'Thessaloniki' },
-    { title: 'Classic Theater Play', category: 'Theater', description: 'A timeless classic performed by our local theater group.', date: new Date(), time: '20:00', remainingTickets: 120, imageUrl: 'http://example.com/classicplay.jpg',cityName: 'Thessaloniki' },
-    { title: 'Modern Dance Performance', category: 'Theater', description: 'A modern dance performance that tells a captivating story.', date: new Date(), time: '20:30', remainingTickets: 100, imageUrl: 'http://example.com/moderndance.jpg',cityName: 'Thessaloniki' },
-    { title: 'Tech Expo', category: 'Technology', description: 'Explore the latest in technology and innovation.', date: new Date(), time: '10:00', remainingTickets: 400, imageUrl: 'http://example.com/techexpo.jpg',cityName: 'Thessaloniki' },
-    { title: 'Coding Workshop', category: 'Technology', description: 'Learn to code in one day. No prior experience required.', date: new Date(), time: '09:00', remainingTickets: 50, imageUrl: 'http://example.com/codingworkshop.jpg',cityName: 'Thessaloniki'  },
-    { title: 'Electronic Music Festival', category: 'Music', description: 'A festival featuring top electronic music artists.', date: new Date(), time: '22:00', remainingTickets: 1000, imageUrl: 'http://example.com/electronicfestival.jpg',cityName: 'Corfu' },
-    { title: 'Documentary Film Premiere', category: 'Cinema', description: 'Premiere of a groundbreaking documentary.', date: new Date(), time: '19:00', remainingTickets: 150, imageUrl: 'http://example.com/documentarypremiere.jpg',cityName: 'Corfu' },
-    { title: 'Basketball Game', category: 'Sports', description: 'Local teams compete in a thrilling game.', date: new Date(), time: '18:00', remainingTickets: 250, imageUrl: 'http://example.com/basketballgame.jpg',cityName: 'Serres' },
-    { title: 'Improv Night', category: 'Theater', description: 'A night of laughter and improvisation.', date: new Date(), time: '20:00', remainingTickets: 70, imageUrl: 'http://example.com/improvnight.jpg',cityName: 'Serres' },
-    { title: 'Startup Pitch Event', category: 'Technology', description: 'Emerging startups pitch their ideas to potential investors.', date: new Date(), time: '14:00', remainingTickets: 100, imageUrl: 'http://example.com/startup.jpg',cityName: 'Serres'}];
-
-
-    async function seedDB() {
-        try {
-            await City.deleteMany({});
-            console.log('cities cleared');
-            await Event.deleteMany({});
-            console.log('events cleared');
-
-
-            const cityMap = {};
-            for (let city of cities) {
-                const newCity = new City(city);
-                await newCity.save();
-                cityMap[city.title] = newCity._id; // Map city title to its _id
-
-            }
-            console.log('cities added');
-
-            for (const event of events) {
-                const cityId = cityMap[event.cityName];
-                if (!cityId) {
-                    console.log(`City not found for ${event.title}`);
-                    continue;
-                }
-                delete event.cityName; // Remove temporary property
-                const newEvent = await new Event({ ...event, city: cityId }).save();
-                
-                // Add event ID to the city's events array
-                await City.findByIdAndUpdate(cityId, { $push: { events: newEvent._id } });
-            }
-    
-            console.log('Events added and associated with cities');
-        } catch(error) {
-            console.log('An error occured', error);
-        } finally {
-            mongoose.connection.close();
-        }
+  async function addEventsForCity(cityTitle, eventArray) {
+    const city = await City.findOne({ title: cityTitle });
+    if (!city) {
+      console.log(`City not found: ${cityTitle}`);
+      return;
     }
-    seedDB();
+
+    let eventCount = 0; // Initialize a counter for the events
+
+    for (const eventData of eventArray) {
+      const newEvent = new Event({ ...eventData, city: city._id });
+      await newEvent.save();
+      city.events.push(newEvent._id);
+      eventCount++; // Increment the counter for each successful event addition
+    }
+
+    // Update the numOfEvents field for the city
+    city.numOfEvents = eventCount;
+
+    await city.save();
+    console.log(`Events added and numOfEvents updated for ${cityTitle}`);
+}
+
+
+async function seedDB() {
+    await connectDB(); // Make sure DB connection is established before seeding
+
+    try {
+        console.log('Starting the database seeding...');
+        await City.deleteMany({});
+        await Event.deleteMany({});
+        console.log('Database cleared');
+
+        // Create and save city documents
+        for (let city of cities) {
+            const newCity = new City(city);
+            await newCity.save();
+        }
+        console.log('Cities added');
+
+        // Now add events to each city
+        await addEventsForCity('Αθήνα', AthensEvents);
+        await addEventsForCity('Θεσσαλονίκη', ThessalonikiEvents);
+        await addEventsForCity('Σέρρες', SerresEvents);
+        await addEventsForCity('Κέρκυρα', CorfuEvents);
+
+        console.log('All events added successfully');
+    } catch (error) {
+        console.error('An error occurred:', error);
+    } finally {
+        mongoose.connection.close();
+    }
+}
+
+seedDB();
