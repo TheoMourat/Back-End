@@ -1,5 +1,5 @@
 const express = require('express');
-const Event = require('../models/Event'); 
+const Event = require('../models/Event');
 const router = express.Router();
 
 //api endpoint that shows all events
@@ -38,6 +38,25 @@ router.get('/:cityId/:category', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
+    }
+});
+
+// Endpoint to fetch information of an event by its ID
+router.get('/events/:eventId', async (req, res) => {
+    try {
+        // Retrieve the event ID from the request parameters
+        const eventId = req.params.eventId;
+
+        const event = await Event.findById(eventId);
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        res.json(event);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 
