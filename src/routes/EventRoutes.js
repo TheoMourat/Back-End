@@ -11,7 +11,34 @@ router.get('/', async (req, res) => {
         res.status(500).send("Error fetching events");
     }
 });
+// Endpoint to get events by City ID
+router.get('/eventsByCityId/:cityId', async (req, res) => {
+    try {
+        const cityId = req.params.cityId;
+        const cityEvents = await Event.find({ city: cityId });
+        if (!cityEvents) {
+            return res.status(404).send("Events for this cityId not found");
+        }
+        res.json(cityEvents);
+    } catch (error) {
+        res.status(500).send("Error fetching events");
+    }
+});
+// Endpoint to get events based on category and city 
+router.get('/:cityId/:category', async (req, res) => {
+    const { cityId, category } = req.params;
 
-// more event api-endpoints should be added here
+    try {
+        const events = await Event.find({
+            city: cityId,
+            category: category
+        });
+
+        res.json(events);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
 
 module.exports = router;
